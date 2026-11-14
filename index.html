@@ -86,13 +86,13 @@ function paintPhoto(c,img,s,setting){
  const dateSize=globalDateSize;
  if(date){c.font=`${dateSize}px "${font}", cursive`;c.textAlign='right';c.fillStyle='#555';c.fillText(date,right,captionBottom);}
  if(txt.trim()){
-  c.fillStyle='#222';c.textAlign='left';let size=size0,lines=[];
+  c.fillStyle='#222';c.textAlign='center';let size=size0,lines=[];
   const maxWidth=s.w-50,availableBottom=captionBottom-(date?dateSize+5:0);
   for(;size>=15;size--){c.font=`${size}px "${font}", cursive`;lines=wrapCaption(c,txt,maxWidth,4);if(lines.length*size*1.12<=availableBottom-captionTop)break;}
   c.font=`${size}px "${font}", cursive`;
   c.beginPath();c.rect(s.x+12,captionTop-2,s.w-24,captionBottom-captionTop+3);c.clip();
   const shiftX=Number(setting.textX||0),shiftY=Number(setting.textY||0);
-  lines.forEach((line,i)=>c.fillText(line,left+shiftX,captionTop+size+shiftY+(i*size*1.1)));
+  lines.forEach((line,i)=>c.fillText(line,s.x+s.w/2+shiftX,captionTop+size+shiftY+(i*size*1.1)));
  }
 
  c.restore();
