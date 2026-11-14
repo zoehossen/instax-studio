@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="nl"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Instax mini collages – met EXIF-datums</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&amp;family=Caveat:wght@400;700&amp;family=Coming+Soon&amp;family=Courgette&amp;family=Dancing+Script:wght@400;700&amp;family=Gloria+Hallelujah&amp;family=Indie+Flower&amp;family=Kalam:wght@400;700&amp;family=Patrick+Hand&amp;family=Shadows+Into+Light&amp;display=swap" rel="stylesheet"/><style>
+:root{font-family:system-ui,sans-serif;color:#243047;background:#f3f6fb}*{box-sizing:border-box}body{margin:0;padding:14px}main{max-width:650px;margin:auto}h1{font-size:1.5rem;margin:8px 0}section{background:white;border-radius:15px;padding:15px;margin:12px 0;box-shadow:0 2px 10px #0001}p{line-height:1.45}button,.pick,a.download{display:block;width:100%;border:0;border-radius:10px;padding:12px;font:600 15px system-ui;text-align:center;background:#2359d4;color:white;text-decoration:none;cursor:pointer;margin:8px 0}.pick,.secondary{background:#e7edfa;color:#234aa3}button:disabled{opacity:.45}input[type=file]{position:absolute;opacity:0;width:1px;height:1px}.muted,small{color:#657084}.switch{display:flex;gap:9px;align-items:center;margin:10px 0}.switch input{width:20px;height:20px}#preview{display:block;width:min(100%,350px);height:auto;aspect-ratio:2/3;margin:12px auto;border:1px solid #ccc;touch-action:none;background:white}#controls{display:none}.nav{display:flex;gap:8px;align-items:center}.nav button{flex:1}.nav strong{text-align:center;min-width:90px}.modes{display:flex;gap:8px}.modes button{flex:1}.modes button.selected{background:#1746a7;color:white}.modes button:not(.selected){background:#e7edfa;color:#234aa3}#zoom{width:100%;accent-color:#2359d4}#download{display:none;background:#11734a}progress{width:100%}.hint{font-size:13px}#selectedSlot{font-weight:700}#previewWrap{position:relative}textarea,input[type=text],select{width:100%;padding:11px;border:1px solid #bcc6d5;border-radius:9px;font-size:16px;margin:6px 0}#font{font-size:16px}#preview{touch-action:none}#controls{border-top:1px solid #ddd;padding-top:12px}#busy{white-space:pre-line}
+#previewWrap{position:sticky;top:6px;z-index:5;background:#fff;border-radius:12px;padding:2px;box-shadow:0 3px 12px #0002}#preview{max-height:min(49vh,490px);width:auto;max-width:100%;margin:3px auto}#controls{scroll-margin-top:55vh} .subhead{margin:14px 0 4px;font-weight:700} .smallnote{font-size:12px;color:#657084}input[type=range]{width:100%} @media(min-width:850px){main{max-width:1050px}#editorSection{display:grid;grid-template-columns:minmax(340px,480px) 1fr;column-gap:24px;align-items:start}#previewWrap{grid-column:1;grid-row:2 / span 4;top:12px}#editorSection>.nav{grid-column:1 / -1}#editorSection>#controls{grid-column:2;grid-row:2 / span 4}#preview{max-height:75vh}#editorSection>.hint{grid-column:1}}</style></head><body><main><h1>📷 Mijn fotocollages</h1><p>4 kleine Instax-achtige foto’s op één afdruk van 10 × 15 cm, met een wit kader en een bredere onderrand voor tekst.</p>
+<section><label class="pick" for="files">+ Voeg foto's toe (tot 400)</label><input accept="image/*" id="files" multiple="" type="file"/><p class="muted" id="count">Nog geen foto's geselecteerd.</p><button class="secondary" id="clear">Wis alle foto's</button><p class="hint muted">Je kunt meerdere keren maximaal 100 foto's selecteren; de eerdere foto's blijven staan. Als de originele foto een EXIF-opnamedatum heeft, verschijnt die klein rechtsonder (dd-mm-jjjj). Zonder betrouwbare datum blijft het veld leeg. Je kunt de tekst altijd aanpassen.</p><label class="switch"><input checked="" id="lines" type="checkbox"/> Dunne kniplijntjes tonen</label><button class="secondary" id="saveProject">💾 Maak project-ZIP voor je laptop</button><p class="hint muted" id="projectStatus" role="status"></p><a class="download" download="instax_project_met_fotos.zip" id="projectDownload" style="display:none;background:#11734a">⬇️ Tik hier om project-ZIP te downloaden</a><label class="pick" for="openProject">📂 Open eerder bewaard project (ZIP)</label><input accept=".zip,application/zip" id="openProject" type="file"/><p class="hint muted">Overzetten: bewaar het project als ZIP, stuur het naar je laptop via Quick Share, USB of Drive en open daar ditzelfde HTML-programma. De ZIP bevat ook je originele foto’s en bewerkingen. Geen account of upload naar een server nodig.</p></section>
+<section><label class="switch"><input checked="" id="autoRotate" type="checkbox"/> Liggende foto’s automatisch 90° draaien</label><p class="hint muted">Een liggende foto komt dan zijwaarts in het staande vak, zodat meer van de foto zichtbaar blijft. Je kunt elke foto daarna zelf draaien.</p><strong>Automatische indeling</strong><div class="modes"><button class="selected" id="allFit">Hele foto behouden</button><button id="allFill">Automatisch uitvullen</button></div><p class="hint muted">Hele foto: mogelijk witte strookjes. Uitvullen: geen strookjes, maar soms valt een stukje van de foto weg. Je kunt daarna elke foto apart aanpassen.</p></section>
+<section id="editorSection"><strong>Collages bekijken en bewerken</strong><div class="nav"><button class="secondary" id="prev">← Vorige</button><strong id="page">0 / 0</strong><button class="secondary" id="next">Volgende →</button></div><div id="previewWrap"><canvas height="1800" id="preview" width="1200"></canvas></div><p class="hint muted">Tik op een foto in de collage om deze te bewerken. Sleep de foto met je vinger om hem te verschuiven.</p>
+<div id="sharedFonts"><p class="subhead">Lettertype voor ALLE datums en teksten</p><label for="sharedFont">Handgeschreven lettertype (voor alle foto's)</label><select id="sharedFont"><option>Caveat</option><option>Dancing Script</option><option>Indie Flower</option><option>Patrick Hand</option><option>Shadows Into Light</option><option>Gloria Hallelujah</option><option>Kalam</option><option>Amatic SC</option><option>Coming Soon</option><option>Courgette</option></select><label for="dateSize">Datumgrootte voor ALLE foto's: <span id="dateSizeLabel">21</span></label><input id="dateSize" max="40" min="12" type="range" value="21"/><p class="smallnote">Datum en tekst gebruiken hetzelfde lettertype. De datumgrootte geldt overal; de tekstgrootte stel je per foto in.</p></div><div id="controls"><p id="selectedSlot">Foto 1 geselecteerd</p><div class="modes"><button id="fit">Hele foto</button><button id="fill">Uitvullen</button></div><label for="zoom">Zoomen: <span id="zoomLabel">100%</span></label><input id="zoom" max="300" min="100" step="1" type="range" value="100"/><button class="secondary" id="rotate">↻ Draai deze foto 90°</button><p class="hint muted" id="rotationLabel">Liggende foto’s worden automatisch gekanteld.</p><button class="secondary" id="reset">Deze foto centreren en zoom herstellen</button><label for="captionText"><strong>Tekst op de witte onderrand</strong></label><textarea id="captionText" maxlength="180" placeholder="Je eigen tekst (mag meerdere regels zijn)" rows="2"></textarea><p class="hint muted">Je tekst staat groter links op de witte strook en loopt automatisch door naar een volgende regel. De opnamedatum staat klein rechtsonder.</p><label for="fontSize">Tekstgrootte: <span id="fontSizeLabel">35</span></label><input id="fontSize" max="65" min="18" type="range" value="35"/><p class="subhead">Positie van de tekst op deze foto</p><label for="textX">Horizontaal: <span id="textXLabel">0</span></label><input id="textX" max="60" min="-60" type="range" value="0"/><label for="textY">Verticaal: <span id="textYLabel">0</span></label><input id="textY" max="35" min="-40" type="range" value="0"/><button class="secondary" id="resetTextPosition">Tekstpositie herstellen</button></div></section>
+<section><button disabled="" id="go">Maak alle collages als JPG</button><p class="muted" id="busy" role="status">Voeg eerst foto's toe.</p><progress hidden="" id="progress" max="100" value="0"></progress><a class="download" download="fotocollages_10x15.zip" id="download">Download alle collages (ZIP)</a></section><p class="hint muted">Afdrukken op 10 × 15 cm, 1200 × 1800 pixels (ca. 305 dpi). Wit kader rondom en een bredere onderstrook voor tekst. De fotovakken worden hierdoor iets kleiner. Bestel bij voorkeur zonder extra automatische uitsnede. De foto's blijven op je telefoon; er vindt geen upload plaats. Bij 400 foto's kan het verwerken even duren.</p></main>
+<script>
+const $=id=>document.getElementById(id),cv=$('preview'),ctx=cv.getContext('2d'),W=1200,H=1800,MM=12,GAP=12;
+let sharedFont='Caveat',globalDateSize=21;let files=[],settings=[],page=0,selected=-1,busy=false,activeUrl=null,drawSerial=0,previewImages=[],globalMode='fit',drag=null,projectUrl=null;
+// Lees uitsluitend een echte opnamedatum uit EXIF; bestandsdatum is geen betrouwbare opnamedatum.
+function exifDateFromBuffer(buffer){
+ try{
+  const v=new DataView(buffer), n=v.byteLength;
+  if(n<12||v.getUint16(0)!==0xffd8)return '';
+  let pos=2;
+  while(pos+4<n){
+   if(v.getUint8(pos)!==0xff)break;
+   const marker=v.getUint8(pos+1);
+   if(marker===0xda||marker===0xd9)break;
+   if(marker===0xff){pos++;continue}
+   if(marker===0x01||(marker>=0xd0&&marker<=0xd7)){pos+=2;continue}
+   const len=v.getUint16(pos+2);
+   if(len<2||pos+2+len>n)break;
+   if(marker===0xe1&&len>=16&&v.getUint32(pos+4)===0x45786966&&v.getUint16(pos+8)===0){
+    const base=pos+10, end=pos+2+len;
+    const endian=v.getUint16(base), little=endian===0x4949;
+    if(!little&&endian!==0x4d4d)break;
+    const u16=o=>{if(o<base||o+2>end)throw Error('EXIF grens');return v.getUint16(o,little)};
+    const u32=o=>{if(o<base||o+4>end)throw Error('EXIF grens');return v.getUint32(o,little)};
+    if(u16(base+2)!==42)break;
+    const readIFD=(offset)=>{
+     const start=base+offset,count=u16(start),out=new Map();
+     if(count>512||start+2+count*12+4>end)throw Error('EXIF IFD');
+     for(let i=0;i<count;i++){
+      const at=start+2+i*12,tag=u16(at),type=u16(at+2),size=u32(at+4);
+      if(type===2&&size>0&&size<=128){
+       const data=size<=4?at+8:base+u32(at+8);
+       if(data>=base&&data+size<=end){let str='';for(let k=0;k<size;k++){const c=v.getUint8(data+k);if(!c)break;str+=String.fromCharCode(c)}out.set(tag,str)}
+      }else if(type===4&&size===1)out.set(tag,u32(at+8));
+     }
+     return out;
+    };
+    const root=readIFD(u32(base+4));
+    let sub=new Map();if(typeof root.get(0x8769)==='number')sub=readIFD(root.get(0x8769));
+    const raw=sub.get(0x9003)||sub.get(0x9004)||root.get(0x0132)||'';
+    const m=/^(\d{4}):(\d{2}):(\d{2})(?:\s|$)/.exec(raw);
+    if(!m)return '';
+    const y=+m[1],mo=+m[2],d=+m[3],date=new Date(Date.UTC(y,mo-1,d));
+    if(y<1900||y>2100||date.getUTCFullYear()!==y||date.getUTCMonth()!==mo-1||date.getUTCDate()!==d)return '';
+    return `${m[3]}-${m[2]}-${m[1]}`;
+   }
+   pos+=2+len;
+  }
+ }catch(e){console.warn('Opnamedatum niet leesbaar:',e)}
+ return '';
+}
+async function getPhotoDate(file){
+ try{return exifDateFromBuffer(await file.arrayBuffer())}catch(e){return ''}
+}
+function slot(i){let w=(W-2*MM-GAP)/2,h=(H-2*MM-GAP)/2;return{x:MM+(i%2)*(w+GAP),y:MM+Math.floor(i/2)*(h+GAP),w,h}}
+function loadImg(file){return new Promise((resolve,reject)=>{let url=URL.createObjectURL(file),img=new Image();img.onload=()=>resolve({img,url});img.onerror=()=>{URL.revokeObjectURL(url);reject(Error('Kan foto niet lezen: '+file.name))};img.src=url})}
+function rotationFor(img,setting){return setting.rotation===null?( $('autoRotate').checked && img.naturalWidth>img.naturalHeight?90:0):setting.rotation}
+function innerSlot(s){let edge=20,bottom=115;return {x:s.x+edge,y:s.y+edge,w:s.w-edge*2,h:s.h-edge-bottom}}
+function wrapCaption(c,txt,maxWidth,maxLines){
+ const result=[];let words=String(txt).replace(/\r/g,'').split(/(\s+)/);let line='';
+ for(const part of words){if(part.includes('\n')){for(const chunk of part.split('\n')){if(chunk!==part&&line.trim()){result.push(line.trim());line=''}if(chunk.trim())line+=chunk}continue}
+ let candidate=line+part;
+ if(c.measureText(candidate).width<=maxWidth){line=candidate;continue}
+ if(line.trim()){result.push(line.trim());line=''}
+ if(c.measureText(part).width<=maxWidth){line=part.trimStart();continue}
+ for(const ch of part){if(c.measureText(line+ch).width>maxWidth&&line){result.push(line);line=''}line+=ch}
+ }
+ if(line.trim())result.push(line.trim());
+ return result.slice(0,maxLines);
+}
+function paintPhoto(c,img,s,setting){
+ let q=innerSlot(s),iw=img.naturalWidth,ih=img.naturalHeight,rotation=rotationFor(img,setting),turned=rotation%180!==0,rw=turned?ih:iw,rh=turned?iw:ih,base=(setting.mode==='fill'?Math.max:Math.min)(q.w/rw,q.h/rh),scale=base*setting.zoom,x=q.x+q.w/2+setting.dx*q.w,y=q.y+q.h/2+setting.dy*q.h;
+ c.save();c.fillStyle='#f4f4f4';c.fillRect(q.x,q.y,q.w,q.h);c.beginPath();c.rect(q.x,q.y,q.w,q.h);c.clip();c.translate(x,y);c.rotate(rotation*Math.PI/180);c.drawImage(img,-iw*scale/2,-ih*scale/2,iw*scale,ih*scale);c.restore();
+ const date=setting.date||'',txt=setting.text||'';
+ c.save();c.fillStyle='#252525';c.textBaseline='alphabetic';
+ const font=sharedFont,size0=setting.fontSize||35;
+ const left=s.x+25,right=s.x+s.w-22,captionTop=q.y+q.h+12,captionBottom=s.y+s.h-15;
+ const dateSize=globalDateSize;
+ if(date){c.font=`${dateSize}px "${font}", cursive`;c.textAlign='right';c.fillStyle='#555';c.fillText(date,right,captionBottom);}
+ if(txt.trim()){
+  c.fillStyle='#222';c.textAlign='left';let size=size0,lines=[];
+  const maxWidth=s.w-50,availableBottom=captionBottom-(date?dateSize+5:0);
+  for(;size>=15;size--){c.font=`${size}px "${font}", cursive`;lines=wrapCaption(c,txt,maxWidth,4);if(lines.length*size*1.12<=availableBottom-captionTop)break;}
+  c.font=`${size}px "${font}", cursive`;
+  c.beginPath();c.rect(s.x+12,captionTop-2,s.w-24,captionBottom-captionTop+3);c.clip();
+  const shiftX=Number(setting.textX||0),shiftY=Number(setting.textY||0);
+  lines.forEach((line,i)=>c.fillText(line,left+shiftX,captionTop+size+shiftY+(i*size*1.1)));
+ }
+
+ c.restore();
+}
+function paintBase(c){c.fillStyle='#fff';c.fillRect(0,0,W,H)}
+function paintLines(c){if(!$('lines').checked)return;c.save();c.strokeStyle='#c9c9c9';c.lineWidth=2;for(let i=0;i<4;i++){let s=slot(i);c.strokeRect(s.x,s.y,s.w,s.h)}c.restore()}
+function paintSelection(c){if(selected<0||page*4+selected>=files.length)return;let s=slot(selected);c.save();c.strokeStyle='#2563eb';c.lineWidth=9;c.strokeRect(s.x+5,s.y+5,s.w-10,s.h-10);c.restore()}
+function redraw(){paintBase(ctx);for(let i=0;i<4;i++){let idx=page*4+i;if(idx<files.length&&previewImages[i])paintPhoto(ctx,previewImages[i].img,slot(i),settings[idx])}paintLines(ctx);paintSelection(ctx)}
+async function render(){let token=++drawSerial;for(let obj of previewImages)if(obj)URL.revokeObjectURL(obj.url);previewImages=[];let imgs=[];for(let i=0;i<4;i++){let index=page*4+i;if(index>=files.length)continue;try{let data=await loadImg(files[index]);if(token!==drawSerial){URL.revokeObjectURL(data.url);imgs.forEach(d=>d&&URL.revokeObjectURL(d.url));return}imgs[i]=data}catch(e){console.warn(e)}}if(token!==drawSerial){imgs.forEach(d=>d&&URL.revokeObjectURL(d.url));return}previewImages=imgs;redraw()}
+function sync(){let pages=Math.ceil(files.length/4);$('count').textContent=files.length?`${files.length} foto's geselecteerd → ${pages} collages.`:'Nog geen foto’s geselecteerd.';$('page').textContent=pages?`${page+1} / ${pages}`:'0 / 0';$('prev').disabled=page<=0;$('next').disabled=page>=pages-1;$('go').disabled=busy||!files.length;$('controls').style.display=selected>=0&&page*4+selected<files.length?'block':'none';if(selected>=0&&page*4+selected<files.length){let s=settings[page*4+selected];$('selectedSlot').textContent=`Foto ${page*4+selected+1} geselecteerd (vak ${selected+1})`;$('zoom').value=Math.round(s.zoom*100);$('zoomLabel').textContent=Math.round(s.zoom*100)+'%';$('rotationLabel').textContent=s.rotation===null?'Draaistand: automatisch (liggende foto’s 90°)':'Draaistand: '+s.rotation+'°';$('captionText').value=s.text||'';$('textX').value=s.textX||0;$('textY').value=s.textY||0;$('textXLabel').textContent=s.textX||0;$('textYLabel').textContent=s.textY||0;$('fontSize').value=s.fontSize||35;$('fontSizeLabel').textContent=s.fontSize||35;$('fit').classList.toggle('selected',s.mode==='fit');$('fill').classList.toggle('selected',s.mode==='fill')}$('sharedFont').value=sharedFont;$('dateSize').value=globalDateSize;$('dateSizeLabel').textContent=globalDateSize;$('allFit').classList.toggle('selected',globalMode==='fit');$('allFill').classList.toggle('selected',globalMode==='fill')}
+$('files').addEventListener('change',async e=>{if(busy)return;let incoming=Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'));let allowed=Math.max(0,400-files.length),add=incoming.slice(0,allowed);files.push(...add);settings.push(...add.map(()=>({mode:globalMode,zoom:1,dx:0,dy:0,rotation:null,text:'',date:'',font:'Caveat',fontSize:35})));const start=settings.length-add.length;for(let i=0;i<add.length;i++){settings[start+i].date=await getPhotoDate(add[i]);if(i%10===0){$('busy').textContent=`Opnamedatums lezen: ${i+1}/${add.length}…`;await new Promise(r=>setTimeout(r,0))}}e.target.value='';if(incoming.length>allowed)alert('Maximaal 400 foto’s.');selected=-1;sync();await render();$('busy').textContent='Je kunt collages nu bekijken en bewerken.'});
+$('clear').onclick=async()=>{if(busy)return;if(files.length&&!confirm('Alle geselecteerde foto’s en bewerkingen wissen?'))return;files=[];settings=[];page=0;selected=-1;sync();await render();$('busy').textContent='Voeg eerst foto’s toe.'};
+function goPage(n){if(n<0||n>=Math.ceil(files.length/4)||busy)return;page=n;selected=-1;sync();render()};$('prev').onclick=()=>goPage(page-1);$('next').onclick=()=>goPage(page+1);
+function changeMode(mode,all){if(busy)return;if(all){globalMode=mode;settings.forEach(s=>{s.mode=mode;s.zoom=1;s.dx=0;s.dy=0})}else if(selected>=0){let s=settings[page*4+selected];s.mode=mode;s.zoom=1;s.dx=0;s.dy=0}sync();redraw()};$('allFit').onclick=()=>changeMode('fit',true);$('allFill').onclick=()=>changeMode('fill',true);$('fit').onclick=()=>changeMode('fit',false);$('fill').onclick=()=>changeMode('fill',false);
+$('zoom').oninput=e=>{if(selected<0)return;settings[page*4+selected].zoom=Number(e.target.value)/100;$('zoomLabel').textContent=e.target.value+'%';redraw()};$('reset').onclick=()=>{if(selected<0)return;Object.assign(settings[page*4+selected],{zoom:1,dx:0,dy:0,rotation:null});sync();redraw()};$('lines').onchange=redraw;$('autoRotate').onchange=redraw;$('rotate').onclick=()=>{if(selected<0)return;let i=page*4+selected,s=settings[i],img=previewImages[selected]?.img;let current=img?rotationFor(img,s):(s.rotation??0);s.rotation=(current+90)%360;sync();redraw()};
+function coords(e){let r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+cv.addEventListener('pointerdown',e=>{if(busy||!files.length)return;let p=coords(e),i=[0,1,2,3].find(i=>{let s=slot(i);return p.x>=s.x&&p.x<=s.x+s.w&&p.y>=s.y&&p.y<=s.y+s.h&&page*4+i<files.length});if(i===undefined)return;selected=i;drag={x:p.x,y:p.y,dx:settings[page*4+i].dx,dy:settings[page*4+i].dy};cv.setPointerCapture(e.pointerId);sync();redraw()});cv.addEventListener('pointermove',e=>{if(!drag||selected<0)return;let p=coords(e),s=slot(selected),t=settings[page*4+selected];t.dx=drag.dx+(p.x-drag.x)/s.w;t.dy=drag.dy+(p.y-drag.y)/s.h;redraw()});$('captionText').oninput=e=>{if(selected<0)return;settings[page*4+selected].text=e.target.value;redraw()};$('sharedFont').onchange=e=>{sharedFont=e.target.value;document.fonts?.load('35px '+JSON.stringify(sharedFont)).then(redraw);redraw()};$('dateSize').oninput=e=>{globalDateSize=+e.target.value;$('dateSizeLabel').textContent=e.target.value;redraw()};for(let id of ['textX','textY'])$(id).oninput=e=>{if(selected<0)return;settings[page*4+selected][id]=+e.target.value;$(id+'Label').textContent=e.target.value;redraw()};$('resetTextPosition').onclick=()=>{if(selected<0)return;settings[page*4+selected].textX=0;settings[page*4+selected].textY=0;sync();redraw()};$('fontSize').oninput=e=>{if(selected<0)return;settings[page*4+selected].fontSize=+e.target.value;$('fontSizeLabel').textContent=e.target.value;redraw()};document.fonts?.ready.then(()=>redraw());for(let event of ['pointerup','pointercancel','lostpointercapture'])cv.addEventListener(event,()=>drag=null);
+function crcTable(){let t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t}const table=crcTable();function crc32(bytes){let c=0xffffffff;for(let i=0;i<bytes.length;i++)c=table[(c^bytes[i])&255]^(c>>>8);return (c^0xffffffff)>>>0}
+function u16(a,v){a.push(v&255,(v>>>8)&255)}function u32(a,v){a.push(v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255)}
+function zipParts(entries){const encoder=new TextEncoder(),parts=[],central=[];let offset=0;for(let e of entries){let name=encoder.encode(e.name),data=e.data,crc=crc32(data),local=[];u32(local,0x04034b50);u16(local,20);u16(local,0x0800);u16(local,0);u16(local,0);u16(local,0);u32(local,crc);u32(local,data.length);u32(local,data.length);u16(local,name.length);u16(local,0);parts.push(new Uint8Array(local),name,data);let c=[];u32(c,0x02014b50);u16(c,20);u16(c,20);u16(c,0x0800);u16(c,0);u16(c,0);u16(c,0);u32(c,crc);u32(c,data.length);u32(c,data.length);u16(c,name.length);u16(c,0);u16(c,0);u16(c,0);u16(c,0);u32(c,0);u32(c,offset);central.push(new Uint8Array(c),name);offset+=local.length+name.length+data.length}let centralSize=central.reduce((s,a)=>s+a.length,0),end=[];u32(end,0x06054b50);u16(end,0);u16(end,0);u16(end,entries.length);u16(end,entries.length);u32(end,centralSize);u32(end,offset);u16(end,0);return new Blob([...parts,...central,new Uint8Array(end)],{type:'application/zip'})}
+
+function readStoredZip(buffer){let dv=new DataView(buffer),bytes=new Uint8Array(buffer),decoder=new TextDecoder(),out=new Map(),pos=0;while(pos+30<=bytes.length&&dv.getUint32(pos,true)===0x04034b50){let method=dv.getUint16(pos+8,true),size=dv.getUint32(pos+18,true),nameLen=dv.getUint16(pos+26,true),extraLen=dv.getUint16(pos+28,true),name=decoder.decode(bytes.slice(pos+30,pos+30+nameLen)),start=pos+30+nameLen+extraLen;if(method!==0)throw Error('Dit ZIP-bestand is niet door dit programma gemaakt.');if(start+size>bytes.length)throw Error('ZIP is onvolledig');out.set(name,bytes.slice(start,start+size));pos=start+size}return out}
+$('saveProject').onclick=async()=>{
+ if(!files.length||busy){$('projectStatus').textContent=files.length?'Even wachten tot de vorige bewerking klaar is.':'Voeg eerst foto’s toe.';return}
+ busy=true;sync();$('projectDownload').style.display='none';
+ const status=$('projectStatus');status.textContent='Project voorbereiden…';
+ try{
+  let names=files.map((f,i)=>`photos/${String(i).padStart(4,'0')}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`);
+  let entries=[{name:'project.json',data:new TextEncoder().encode(JSON.stringify({version:2,settings,globalMode,autoRotate:$('autoRotate').checked,lines:$('lines').checked,names,sharedFont,globalDateSize}))}];
+  let bytes=0;
+  for(let i=0;i<files.length;i++){
+   let data=new Uint8Array(await files[i].arrayBuffer());bytes+=data.byteLength;
+   entries.push({name:names[i],data});
+   status.textContent=`Foto’s verzamelen: ${i+1} van ${files.length} (${(bytes/1048576).toFixed(0)} MB)…`;
+   if(i%3===0)await new Promise(r=>setTimeout(r,0));
+  }
+  status.textContent='ZIP maken… dit kan bij veel foto’s even duren.';
+  await new Promise(r=>setTimeout(r,40));
+  let blob=zipParts(entries);entries=[];
+  if(projectUrl)URL.revokeObjectURL(projectUrl);
+  projectUrl=URL.createObjectURL(blob);
+  $('projectDownload').href=projectUrl;
+  $('projectDownload').style.display='block';
+  status.textContent=`Klaar: ${(blob.size/1048576).toFixed(1)} MB. Tik op de GROENE DOWNLOADKNOP hieronder. Het downloaden start niet automatisch.`;
+ }catch(e){status.textContent='Opslaan mislukt: '+(e?.message||e)+'. Bij honderden originele foto’s kan je telefoon te weinig geheugen hebben. Probeer eerst met minder foto’s.'}
+ finally{busy=false;sync()}
+};
+$('openProject').onchange=async e=>{let file=e.target.files?.[0];if(!file||busy)return;if(files.length&&!confirm('Huidige foto’s vervangen door het opgeslagen project?'))return;busy=true;sync();try{let entries=readStoredZip(await file.arrayBuffer()),info=JSON.parse(new TextDecoder().decode(entries.get('project.json')));if(!Array.isArray(info.names)||info.names.length>400)throw Error('Ongeldig project');let next=info.names.map(name=>{let b=entries.get(name);if(!b)throw Error('Foto ontbreekt: '+name);return new File([b],name.split('/').pop(),{type:/\.png$/i.test(name)?'image/png':/\.webp$/i.test(name)?'image/webp':'image/jpeg'})});files=next;settings=info.settings;for(const st of settings){if(st.date===undefined){st.date=/^\d{2}-\d{2}-\d{4}$/.test(st.text||'')?st.text:'';if(st.date)st.text='';}}sharedFont=info.sharedFont||info.settings?.[0]?.font||'Caveat';globalDateSize=info.globalDateSize||21;globalMode=info.globalMode||'fit';$('autoRotate').checked=info.autoRotate!==false;$('lines').checked=info.lines!==false;page=0;selected=-1;$('busy').textContent=`Project geladen: ${files.length} foto's.`}catch(err){$('busy').textContent='Openen mislukt: '+err.message}finally{e.target.value='';busy=false;sync();render()}};
+function canvasBlob(canvas){return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('JPG maken mislukt')),'image/jpeg',.94))}
+async function drawSheet(c,p){paintBase(c);for(let i=0;i<4;i++){let index=p*4+i;if(index>=files.length)break;let data=await loadImg(files[index]);try{paintPhoto(c,data.img,slot(i),settings[index])}finally{URL.revokeObjectURL(data.url)}}paintLines(c)}
+$('go').onclick=async()=>{if(busy||!files.length)return;busy=true;sync();$('download').style.display='none';$('progress').hidden=false;$('progress').value=0;let entries=[],total=Math.ceil(files.length/4),exportCanvas=document.createElement('canvas');exportCanvas.width=W;exportCanvas.height=H;let c=exportCanvas.getContext('2d');try{for(let j=0;j<total;j++){await drawSheet(c,j);let b=await canvasBlob(exportCanvas);entries.push({name:`collage_${String(j+1).padStart(3,'0')}.jpg`,data:new Uint8Array(await b.arrayBuffer())});$('progress').value=Math.round((j+1)/total*100);$('busy').textContent=`Collage ${j+1} van ${total} gemaakt…`;await new Promise(r=>setTimeout(r,0))}let zip=zipParts(entries);entries=[];if(activeUrl)URL.revokeObjectURL(activeUrl);activeUrl=URL.createObjectURL(zip);$('download').href=activeUrl;$('download').style.display='block';$('busy').textContent=`Klaar! ${total} collages. ZIP: ${(zip.size/1048576).toFixed(1)} MB.`}catch(e){$('busy').textContent='Fout: '+e.message+' Probeer eventueel minder foto’s tegelijk.'}finally{busy=false;sync();render()}};sync();render();
+</script></body></html>
